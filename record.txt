@@ -1,0 +1,3 @@
+Run time was: 2155 milliseconds.
+Run time was: 1356 milliseconds.
+Run time was: 206766 milliseconds.

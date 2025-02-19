@@ -4,6 +4,7 @@
 #include <fstream>
 #include <random>
 #include <iomanip>
+#include <chrono>
 
 struct Ele {
     double mass;
@@ -15,7 +16,7 @@ struct Ele {
 const double G = 6.67430e-11; // Gravitational constant
 double dt; // Time step
 int nSteps; // Number of time steps
-int dump_interval; // Output state interval
+int dInter; // Output state interval
 int nEle; // Number of particles
 
 std::vector<Ele> ini_ele(int nEle) {
@@ -90,14 +91,14 @@ void output(const std::vector<Ele> &particles, std::ofstream &outfile) {
 
 int main(int argc, char* argv[]) {
     if (argc != 5) {
-        std::cerr << "Usage: " << argv[0] << " <num_particles> <dt> <num_steps> <dump_interval>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <nEle> <dt> <nStep> <dInter>" << std::endl;
         return 1;
     }
     
     nEle = std::stoi(argv[1]);
     dt = std::stod(argv[2]);
     nSteps = std::stoi(argv[3]);
-    dump_interval = std::stoi(argv[4]);
+    dInter = std::stoi(argv[4]);
     
     std::vector<Ele> particles = ini_ele(nEle);
     std::ofstream outfile("solar.tsv");
@@ -107,16 +108,16 @@ int main(int argc, char* argv[]) {
     for (int step = 0; step < nSteps; ++step) {
         compf(particles);
         update(particles);
-        if (step % dump_interval == 0) {
+        if (step % dInter == 0) {
             output(particles, outfile);
         }
     }
    
     auto end = std::chrono::high_resolution_clock::now(); //and  ends here
     
-    double time = std::chrono::duration_cast<std::chrono::duration<double> >(end - start).count();
+    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    std::cout << "Run time was: " << time << " seconds." << std::endl;
+    std::cout << "Run time was: " << time.count() << " milliseconds." << std::endl;
 
     return 0;
 }
