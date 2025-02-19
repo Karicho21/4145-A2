@@ -101,6 +101,9 @@ int main(int argc, char* argv[]) {
     
     std::vector<Ele> particles = initialize_ele(nEle);
     std::ofstream outfile("solar.tsv");
+
+    auto start = std::chrono::high_resolution_clock::now();  //measuring starts  here
+
     for (int step = 0; step < nSteps; ++step) {
         compf(particles);
         update_particles(particles);
@@ -108,6 +111,13 @@ int main(int argc, char* argv[]) {
             output_state(particles, outfile);
         }
     }
+   
+    auto end = std::chrono::high_resolution_clock::now(); //and  ends here
+    
+    double time = std::chrono::duration_cast<std::chrono::duration<double> >(end - start).count();
+
+    std::cout << "Run time was: " << time << " seconds." << std::endl;
+
     outfile.close();
     std::cout << "Simulation completed. Output saved to solar.tsv" << std::endl;
     return 0;
