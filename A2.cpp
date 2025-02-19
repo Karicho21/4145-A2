@@ -1,12 +1,9 @@
-
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <fstream>
 #include <random>
 #include <iomanip>
-#include <chrono>
-
 
 struct Ele {
     double mass;
@@ -21,7 +18,7 @@ int nSteps; // Number of time steps
 int dump_interval; // Output state interval
 int nEle; // Number of particles
 
-std::vector<Ele> initialize_ele(int nEle) {
+std::vector<Ele> ini_ele(int nEle) {
     std::vector<Ele> prtce(nEle);  
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -69,7 +66,7 @@ void compf(std::vector<Ele> &particles) {
     }
 }
 
-void update_particles(std::vector<Ele> &particles) {
+void update(std::vector<Ele> &particles) {
     for (auto &a : particles) {
         a.vx += (a.fx / a.mass) * dt;
         a.vy += (a.fy / a.mass) * dt;
@@ -80,7 +77,7 @@ void update_particles(std::vector<Ele> &particles) {
     }
 }
 
-void output_state(const std::vector<Ele> &particles, std::ofstream &outfile) {
+void output(const std::vector<Ele> &particles, std::ofstream &outfile) {
     outfile << particles.size();
     for (const auto a : particles) {
         outfile << "\t" << std::scientific << std::setprecision(10)
@@ -102,16 +99,16 @@ int main(int argc, char* argv[]) {
     nSteps = std::stoi(argv[3]);
     dump_interval = std::stoi(argv[4]);
     
-    std::vector<Ele> particles = initialize_ele(nEle);
+    std::vector<Ele> particles = ini_ele(nEle);
     std::ofstream outfile("solar.tsv");
 
     auto start = std::chrono::high_resolution_clock::now();  //measuring starts  here
 
     for (int step = 0; step < nSteps; ++step) {
         compf(particles);
-        update_particles(particles);
+        update(particles);
         if (step % dump_interval == 0) {
-            output_state(particles, outfile);
+            output(particles, outfile);
         }
     }
    
