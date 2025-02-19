@@ -1,9 +1,12 @@
+
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <fstream>
 #include <random>
 #include <iomanip>
+#include <chrono>
+
 
 struct Ele {
     double mass;
@@ -118,7 +121,5 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Run time was: " << time << " seconds." << std::endl;
 
-    outfile.close();
-    std::cout << "Simulation completed. Output saved to solar.tsv" << std::endl;
     return 0;
 }
