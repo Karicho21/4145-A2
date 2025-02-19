@@ -5,7 +5,7 @@
 #include <random>
 #include <iomanip>
 
-struct Particle {
+struct Ele {
     double mass;
     double x, y, z;
     double vx, vy, vz;
@@ -14,34 +14,36 @@ struct Particle {
 
 const double G = 6.67430e-11; // Gravitational constant
 double dt; // Time step
-int num_steps; // Number of time steps
+int nSteps; // Number of time steps
 int dump_interval; // Output state interval
-int num_particles; // Number of particles
+int nEle; // Number of particles
 
-std::vector<Particle> initialize_particles(int num_particles) {
-    std::vector<Particle> particles(num_particles);
+std::vector<Ele> initialize_ele(int nEle) {
+    std::vector<Ele> prtce(nEle);  
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> pos_dist(-1.0, 1.0);
     std::uniform_real_distribution<> vel_dist(-0.1, 0.1);
     std::uniform_real_distribution<> mass_dist(1e24, 1e26);
     
-    for (auto &p : particles) {
-        p.mass = mass_dist(gen);
-        p.x = pos_dist(gen);
-        p.y = pos_dist(gen);
-        p.z = pos_dist(gen);
-        p.vx = vel_dist(gen);
-        p.vy = vel_dist(gen);
-        p.vz = vel_dist(gen);
-        p.fx = p.fy = p.fz = 0.0;
+    for (int i = 0; i < nEle; i++) {
+        Ele a;
+        a.mass = mass_dist(gen);
+        a.x = pos_dist(gen);
+        a.y = pos_dist(gen);
+        a.z = pos_dist(gen);
+        a.vx = vel_dist(gen);
+        a.vy = vel_dist(gen);
+        a.vz = vel_dist(gen);
+        a.fx = a.fy = a.fz = 0.0;
+        prtce[i] = a;  
     }
-    return particles;
+    return prtce;  
 }
 
-void compute_forces(std::vector<Particle> &particles) {
-    for (auto &p : particles) {
-        p.fx = p.fy = p.fz = 0.0; // Reset forces
+void compf(std::vector<Ele> &particles) {
+    for (auto &a : particles) {
+        a.fx = a.fy = a.fz = 0.0; // Reset forces
     }
     for (size_t i = 0; i < particles.size(); ++i) {
         for (size_t j = i + 1; j < particles.size(); ++j) {
@@ -64,24 +66,24 @@ void compute_forces(std::vector<Particle> &particles) {
     }
 }
 
-void update_particles(std::vector<Particle> &particles) {
-    for (auto &p : particles) {
-        p.vx += (p.fx / p.mass) * dt;
-        p.vy += (p.fy / p.mass) * dt;
-        p.vz += (p.fz / p.mass) * dt;
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        p.z += p.vz * dt;
+void update_particles(std::vector<Ele> &particles) {
+    for (auto &a : particles) {
+        a.vx += (a.fx / a.mass) * dt;
+        a.vy += (a.fy / a.mass) * dt;
+        a.vz += (a.fz / a.mass) * dt;
+        a.x += a.vx * dt;
+        a.y += a.vy * dt;
+        a.z += a.vz * dt;
     }
 }
 
-void output_state(const std::vector<Particle> &particles, std::ofstream &outfile) {
+void output_state(const std::vector<Ele> &particles, std::ofstream &outfile) {
     outfile << particles.size();
-    for (const auto &p : particles) {
+    for (const auto a : particles) {
         outfile << "\t" << std::scientific << std::setprecision(10)
-                << p.mass << "\t" << p.x << "\t" << p.y << "\t" << p.z
-                << "\t" << p.vx << "\t" << p.vy << "\t" << p.vz
-                << "\t" << p.fx << "\t" << p.fy << "\t" << p.fz;
+                << a.mass << "\t" << a.x << "\t" << a.y << "\t" << a.z
+                << "\t" << a.vx << "\t" << a.vy << "\t" << a.vz
+                << "\t" << a.fx << "\t" << a.fy << "\t" << a.fz;
     }
     outfile << "\n";
 }
@@ -92,15 +94,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    num_particles = std::stoi(argv[1]);
+    nEle = std::stoi(argv[1]);
     dt = std::stod(argv[2]);
-    num_steps = std::stoi(argv[3]);
+    nSteps = std::stoi(argv[3]);
     dump_interval = std::stoi(argv[4]);
     
-    std::vector<Particle> particles = initialize_particles(num_particles);
+    std::vector<Ele> particles = initialize_ele(nEle);
     std::ofstream outfile("solar.tsv");
-    for (int step = 0; step < num_steps; ++step) {
-        compute_forces(particles);
+    for (int step = 0; step < nSteps; ++step) {
+        compf(particles);
         update_particles(particles);
         if (step % dump_interval == 0) {
             output_state(particles, outfile);
