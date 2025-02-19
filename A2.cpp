@@ -3,7 +3,7 @@
 #include <cmath>
 #include <fstream>
 #include <random>
-#include <iomanip> 
+#include <iomanip>
 
 struct Particle {
     double mass;
@@ -85,7 +85,6 @@ void output_state(const std::vector<Particle> &particles, std::ofstream &outfile
     }
     outfile << "\n";
 }
-
 
 int main(int argc, char* argv[]) {
     if (argc != 5) {
